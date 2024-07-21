@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin } from '../services/api';
 
-export default function Login() {
+const API_URL = import.meta.env.API_URL || 'http://localhost:5005';
 
+export default function Login() {
     // Hook - form data
     const [formData, setFormData] = useState({
         email: '',
@@ -60,7 +61,7 @@ export default function Login() {
     // input handler
     const handleGoogleLogin = () => {
         // redirect to google login
-        window.location.href = 'http://localhost:5005/api/auth/google';
+        window.location.href = `${API_URL}/api/auth/google`;
     };
     
     return (

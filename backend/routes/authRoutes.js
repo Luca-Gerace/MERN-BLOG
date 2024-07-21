@@ -4,6 +4,8 @@ import { generateJWT } from '../utils/jwt.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import passport from '../config/passportConfig.js';
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http:localhost:5173';
+
 const router = express.Router();
 
 // POST /login
@@ -51,17 +53,17 @@ router.get('/me', authMiddleware, async (req, res) => {
 router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // GET /google/callback - callback function after google auth
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: `${FRONTEND_URL}/login` }), async (req, res) => {
     try {
         // generate jwt token
         const token = await generateJWT({ id: req.user._id });
 
         // redirect user with token to frontend, use token for the other requests
-        res.redirect(`http://localhost:5173/login?token=${token}`);
+        res.redirect(`${FRONTEND_URL}/login?token=${token}`);
 
     } catch (err) {
         console.error('Token generation error', err);
-        res.redirect('/login/error=auth_failed');
+        res.redirect(`${FRONTEND_URL}/login/error=auth_failed`);
     }
 });
 

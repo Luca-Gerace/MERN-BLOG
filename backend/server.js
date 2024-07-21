@@ -22,8 +22,28 @@ dotenv.config();
 
 const app = express();
 
+// cors cofiguration
+const corsOptions = {
+  origin: function(origin, callback) {
+    const whiteList = [
+      'http://localhost:5173', // development
+      'https://mern-blog-eight-pearl.vercel.app/', // vercel
+      'https://mern-blog-b8ed.onrender.com', // render
+    ]
+
+    if (process.env.NODE_ENV === 'develpment') {
+      callback(null, true);
+    } else if (whiteList.indexOf !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Generic Cors Error'));
+    }
+  },
+  credentials: true
+}
+
 // App - Global Middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Session configuration

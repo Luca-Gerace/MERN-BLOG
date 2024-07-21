@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { getUserData } from "../services/api";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -7,20 +8,35 @@ export default function Navbar() {
 
   useEffect(() => {
     // Check if token exist inside localStorage
-    const checkLoginStatus = () => {
-      const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
+    const checkLoginStatus = async () => {
+
+      const token = localStorage.getItem('token');
+
+      if (token) {
+        try {
+          await getUserData();
+          setIsLoggedIn(true); 
+        } catch (err) {
+          console.error('token not valid', err);
+          localStorage.removeItem('token');
+          setIsLoggedIn(false); 
+        }
+      } else {
+        setIsLoggedIn(false);
+      }
     };
 
-    // Check login status
+    // call login status func
     checkLoginStatus();
 
-    // Aggiungi un event listener per controllare lo stato di login
+    // Listener to check login status
     window.addEventListener("storage", checkLoginStatus);
+    window.addEventListener("loginStateChange", checkLoginStatus);
 
-    // Rimuovi l'event listener quando il componente viene smontato
+    // remove event listeners
     return () => {
       window.removeEventListener("storage", checkLoginStatus);
+      window.removeEventListener("loginStateChange", checkLoginStatus);
     };
   }, []);
 
