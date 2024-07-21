@@ -1,6 +1,35 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if token exist inside localStorage
+    const checkLoginStatus = () => {
+      const token = localStorage.getItem("token");
+      setIsLoggedIn(!!token);
+    };
+
+    // Check login status
+    checkLoginStatus();
+
+    // Aggiungi un event listener per controllare lo stato di login
+    window.addEventListener("storage", checkLoginStatus);
+
+    // Rimuovi l'event listener quando il componente viene smontato
+    return () => {
+      window.removeEventListener("storage", checkLoginStatus);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
   return (
     <nav className="navbar">
       <div className="container">
@@ -14,11 +43,33 @@ export default function Navbar() {
               Home
             </Link>
           </li>
-          <li className="nav-item">
-            <Link to="/create" className="nav-link">
-              Nuovo Post
-            </Link>
-          </li>
+          {isLoggedIn ? (
+            <>
+              <li className="nav-item">
+                <Link to="/create" className="nav-link">
+                  Nuovo Post
+                </Link>
+              </li>
+              <li className="nav-item">
+                <button onClick={handleLogout} className="nav-link">
+                  Logout
+                </button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li className="nav-item">
+                <Link to="/login" className="nav-link">
+                  Login
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link to="/register" className="nav-link">
+                  Registrati
+                </Link>
+              </li>
+            </>
+          )}
         </ul>
       </div>
     </nav>
