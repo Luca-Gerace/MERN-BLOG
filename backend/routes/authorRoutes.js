@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET /authors/<author._id>
+// GET /authors/:id
 router.get('/:id', async (req, res) => {
   try {
     const author = await Author.findById(req.params.id);
@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT /authors/<author._id>
+// PUT /authors/:id
 router.put('/:id', async (req, res) => {
   try {
     // Find and update specific author in MongoDB
@@ -68,7 +68,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE /authors/<author._id>
+// DELETE /authors/:id
 router.delete('/:id', async (req, res) => {
   try {
     // Find and delete specific author in MongoDB
@@ -85,7 +85,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// GET /authors/<author._id>/blogPosts
+// GET /authors/:id/blogPosts
 router.get('/:id/blogPosts', async (req, res) => {
   try {
     // Find author by id
@@ -105,7 +105,7 @@ router.get('/:id/blogPosts', async (req, res) => {
   }
 });
 
-// PATCH /author/<author._id>/avatar
+// PATCH /author/:id/avatar
 router.patch('/:id/avatar', cloudinaryUploader.single('avatar'), async (req, res) => {
   try {
     if(!req.file) {

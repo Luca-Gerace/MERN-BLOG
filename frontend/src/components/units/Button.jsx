@@ -1,15 +1,13 @@
 import PropTypes from 'prop-types';
 
-export default function Button({ type, onClick, label, variant, size }) {
+export default function Button({ type = 'button', onClick, label, variant, size }) {
+  const className = `btn ${variant} ${size}`;
 
-    // Dynamic tailwind classes
-    const className = `${variant} ${size}`;
-
-    return (
-        <button type={type} className={className} onClick={onClick}>
-            {label}
-        </button>
-    );
+  return (
+    <button type={type} className={className} onClick={onClick}>
+      {label}
+    </button>
+  );
 }
 
 Button.propTypes = {
@@ -18,9 +16,4 @@ Button.propTypes = {
   label: PropTypes.string.isRequired,
   variant: PropTypes.oneOf(['primary', 'secondary']).isRequired,
   size: PropTypes.oneOf(['s', 'm']).isRequired,
-};
-
-Button.defaultProps = {
-  type: 'button',
-  onClick: undefined,
 };

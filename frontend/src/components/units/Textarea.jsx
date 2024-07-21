@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-export default function Textarea({ label, id, name, value, onChange, required }) {
+export default function Textarea({ label, id, name, value, onChange, required = false }) {
   return (
     <div className="form-group">
       <label htmlFor={id}>{label}</label>
@@ -22,8 +22,4 @@ Textarea.propTypes = {
   value: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,
   required: PropTypes.bool,
-};
-
-Textarea.defaultProps = {
-  required: false,
 };
