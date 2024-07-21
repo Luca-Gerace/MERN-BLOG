@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin } from '../services/api';
 
-const API_URL = import.meta.env.API_URL || 'http://localhost:5005';
+const API_URL = import.meta.env.API_URL;
 
 export default function Login() {
     // Hook - form data
