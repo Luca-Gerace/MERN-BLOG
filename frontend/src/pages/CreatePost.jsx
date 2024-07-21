@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/api";
-import { Input, Textarea } from "../components/units";
+import { Button, Input, Textarea } from "../components/units";
 
 export default function CreatePost() {
 
@@ -130,9 +130,12 @@ export default function CreatePost() {
           onChange={handleChange}
           required
         />
-        <button type="submit" className="submit-button">
-          Create post
-        </button>
+        <Button
+          type="submit"
+          label="Create post"
+          variant="primary"
+          size="m"
+        />
       </form>
     </div>
   );
