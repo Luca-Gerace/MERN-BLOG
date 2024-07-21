@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/api";
+import { Input, Textarea } from "../components/units";
 
 export default function CreatePost() {
 
@@ -75,70 +76,60 @@ export default function CreatePost() {
     <div className="container">
       <h1>Create new post</h1>
       <form onSubmit={handleSubmit} className="create-post-form">
-        <div className="form-group">
-          <label>Title</label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={post.title}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Category</label>
-          <input
-            type="text"
-            id="category"
-            name="category"
-            value={post.category}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Content</label>
-          <textarea
-            id="content"
-            name="content"
-            value={post.content}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Image</label>
-          <input
-            type="file"
-            id="cover"
-            name="cover"
-            onChange={handleFileChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Read time (minutes)</label>
-          <input
-            type="number"
-            id="readTimeValue"
-            name="readTimeValue"
-            value={post.readTime.value}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <div className="form-group">
-          <label>Author email</label>
-          <input
-            type="email"
-            id="author"
-            name="author"
-            value={post.author}
-            onChange={handleChange}
-            required
-          />
-        </div>
+        <Input
+          label="Title"
+          type="text"
+          id="title"
+          name="title"
+          value={post.title}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Category"
+          type="text"
+          id="category"
+          name="category"
+          value={post.category}
+          onChange={handleChange}
+          required
+        />
+        <Textarea
+          label="Content"
+          type="text"
+          id="content"
+          name="content"
+          value={post.content}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Image"
+          type="file"
+          id="cover"
+          name="cover"
+          value={post.cover}
+          onChange={handleFileChange}
+          required
+        />
+        <Input
+          label="Read time (minutes)"
+          type="number"
+          id="readTimeValue"
+          name="readTimeValue"
+          value={post.readTime.value}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Author email"
+          type="email"
+          id="author"
+          name="author"
+          value={post.author}
+          onChange={handleChange}
+          required
+        />
         <button type="submit" className="submit-button">
           Create post
         </button>
