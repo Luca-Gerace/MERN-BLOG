@@ -5,9 +5,10 @@ const authorSchema = new mongoose.Schema({
   name: { type: String, required: true },
   surname: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  birthDate: { type: String, required: true },
+  birthDate: { type: String },
   avatar: { type: String },
-  password: { type: String, required: true }
+  password: { type: String },
+  googleId: { type: String }
 }, {
   timestamps: true,
   collection: "authors"

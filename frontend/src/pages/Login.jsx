@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin } from '../services/api';
 
 export default function Login() {
@@ -12,6 +12,23 @@ export default function Login() {
 
     // Hook - navigation
     const navigate = useNavigate();
+    const location = useLocation();
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const token = params.get('token');
+
+        if (token) {
+            // save token into localstorage
+            localStorage.setItem('token', token);
+            
+            window.dispatchEvent(new Event('storage'));
+
+            // Go to home
+            navigate('/');
+        }
+
+    }, [location, navigate])
 
     // input handler
     const handleChange = (e) => {
@@ -40,6 +57,12 @@ export default function Login() {
         }
     };
 
+    // input handler
+    const handleGoogleLogin = () => {
+        // redirect to google login
+        window.location.href = 'http://localhost:5005/api/auth/google';
+    };
+    
     return (
         <div className='container'>
             <h2>Login</h2>
@@ -60,6 +83,7 @@ export default function Login() {
                 />
                 <button type='submit'>Accedi</button>
             </form>
+            <button onClick={handleGoogleLogin}>Accedi con Google</button>
         </div>
     );
 }

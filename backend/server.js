@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import listEndpoints from 'express-list-endpoints';
+import session from 'express-session';
+import passport from './config/passportConfig.js';
 // Routes
 import authRoutes from './routes/authRoutes.js';
 import authorRoutes from './routes/authorRoutes.js';
@@ -23,6 +25,21 @@ const app = express();
 // App - Global Middlewares
 app.use(cors());
 app.use(express.json());
+
+// Session configuration
+app.use(
+  session({
+    // use session_secret to validate cookie session 
+    secret: process.env.SESSION_SECRET,
+    // session optimizations
+    resave: false,
+    saveUninitialized: false
+  })
+);
+
+// use passport configuration
+app.use(passport.initialize());
+app.use(passport.session());
 
 // MongoDB connection
 mongoose

@@ -2,6 +2,7 @@ import express from 'express';
 import Author from '../models/Author.js';
 import { generateJWT } from '../utils/jwt.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
+import passport from '../config/passportConfig.js';
 
 const router = express.Router();
 
@@ -44,6 +45,24 @@ router.get('/me', authMiddleware, async (req, res) => {
     delete authorData.password;
 
     res.json(authorData)
+});
+
+// GET /google - handle google auth
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// GET /google/callback - callback function after google auth
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/login' }), async (req, res) => {
+    try {
+        // generate jwt token
+        const token = await generateJWT({ id: req.user._id });
+
+        // redirect user with token to frontend, use token for the other requests
+        res.redirect(`http://localhost:5173/login?token=${token}`);
+
+    } catch (err) {
+        console.error('Token generation error', err);
+        res.redirect('/login/error=auth_failed');
+    }
 });
 
 export default router;
