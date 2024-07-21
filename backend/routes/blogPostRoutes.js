@@ -1,6 +1,7 @@
 import express from "express";
 import BlogPost from "../models/BlogPost.js";
-import upload from "../middlewares/upload.js";
+import cloudinaryUploader from "../config/cloudinaryConfig.js";
+import { sendEmail } from "../services/emailService.js";
 // import controlloMail from "../middlewares/controlloMail.js"; // NON USARE - SOLO PER DIDATTICA - MIDDLEWARE (commentato)
 
 const router = express.Router();
@@ -44,18 +45,28 @@ router.get("/:id", async (req, res) => {
 });
 
 // POST /blogPosts - with cover upload
-router.post("/", upload.single('cover'), async (req, res) => {
+router.post("/", cloudinaryUploader.single('cover'), async (req, res) => {
   try {
     const postData = req.body;
 
     if (req.file) {
-      postData.cover = `http://localhost:5005/uploads/${req.file.filename}`;
+      postData.cover = req.file.path;
     }
 
     const newPost = new BlogPost(postData);
 
     // Save new blog post in MongoDB
     await newPost.save();
+
+    const htmlContent = `
+      <h1>Post published!</h1>
+      <p>Hi ${newPost.author}</p>
+      <p>This is your post: "${newPost.title}"</p>
+      <p>thank you</p>
+    `
+
+    // Mailgun trigger
+    await sendEmail(newPost.author, 'post created!', htmlContent)
 
     res.status(201).json(newPost);
 
