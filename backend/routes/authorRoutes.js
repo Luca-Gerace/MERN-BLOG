@@ -35,12 +35,18 @@ router.get('/:id', async (req, res) => {
 
 // POST /authors
 router.post('/', async (req, res) => {
+  
   const author = new Author(req.body);
+
   try {
     // Save new author in MongoDB
     const newAuthor = await author.save();
 
-    res.status(201).json(newAuthor);
+    // Remove author password from the response
+    const authorResponse = newAuthor.toObject();
+    delete authorResponse.password;
+
+    res.status(201).json(authorResponse);
 
   } catch (err) {
     res.status(400).json({ message: err.message });

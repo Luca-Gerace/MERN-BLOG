@@ -3,6 +3,7 @@ import BlogPost from '../models/BlogPost.js';
 import cloudinaryUploader from '../config/cloudinaryConfig.js';
 import { v2 as cloudinary } from 'cloudinary';
 import { sendEmail } from '../services/emailService.js';
+import { authMiddleware } from '../middlewares/authMiddleware.js';
 // import controlloMail from '../middlewares/controlloMail.js'; // NON USARE - SOLO PER DIDATTICA - MIDDLEWARE (commentato)
 
 const router = express.Router();
@@ -43,6 +44,9 @@ router.get('/:id', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// Auth middleware for the others routes
+router.use(authMiddleware);
 
 // POST /blogPosts - with cover upload
 router.post('/', cloudinaryUploader.single('cover'), async (req, res) => {
@@ -110,11 +114,11 @@ router.delete('/:id', async (req, res) => {
     
     // Pull cloudinary cover public id
     const publicId = `blog_covers/${post.cover.split('/').pop().split('.')[0]}`
-    
+
     // Delete cloudinary img
     await cloudinary.uploader.destroy(publicId);
 
-    // Find and delete specific author in MongoDB
+    // Find and delete specific post in MongoDB
     const deletedBlogPost = await BlogPost.findByIdAndDelete(req.params.id);
 
     if (!deletedBlogPost) {
