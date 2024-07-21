@@ -3,10 +3,12 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import listEndpoints from "express-list-endpoints";
+// File handling imports
+import path from 'path';
+import { fileURLToPath } from 'url';
 // Routes
 import authorRoutes from "./routes/authorRoutes.js";
 import blogPostRoutes from "./routes/blogPostRoutes.js";
-
 // Middlewares
 import {
   badRequestHandler,
@@ -14,6 +16,10 @@ import {
   notFoundHandler,
   genericErrorHandler,
 } from "./middlewares/errorHandlers.js";
+
+// File handling const
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // .env
 dotenv.config();
@@ -23,6 +29,7 @@ const app = express();
 // App - Global Middlewares
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // MongoDB connection
 mongoose

@@ -1,5 +1,6 @@
 import express from "express";
 import BlogPost from "../models/BlogPost.js";
+import upload from "../middlewares/upload.js";
 // import controlloMail from "../middlewares/controlloMail.js"; // NON USARE - SOLO PER DIDATTICA - MIDDLEWARE (commentato)
 
 const router = express.Router();
@@ -42,19 +43,29 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// POST /blogPosts
-router.post("/", async (req, res) => {
-  const blogPost = new BlogPost(req.body);
+// POST /blogPosts - with cover upload
+router.post("/", upload.single('cover'), async (req, res) => {
   try {
-    // Save new blog post in MongoDB
-    const newBlogPost = await blogPost.save();
+    const postData = req.body;
 
-    res.status(201).json(newBlogPost);
+    if (req.file) {
+      postData.cover = `http://localhost:5005/uploads/${req.file.filename}`;
+    }
+
+    const newPost = new BlogPost(postData);
+
+    // Save new blog post in MongoDB
+    await newPost.save();
+
+    res.status(201).json(newPost);
 
   } catch (err) {
+    console.error('Post creation error', err);
     res.status(400).json({ message: err.message });
   }
 });
+
+
 
 // PUT /blogPosts/<blogPost._id>
 router.put("/:id", async (req, res) => {

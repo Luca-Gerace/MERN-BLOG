@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/api";
 
 export default function CreatePost() {
-  // Hooks - new post
+
+  // Hook - post cover file
+  const [coverFile, setCoverFile] = useState(null);
+
+  // Hook - new post
   const [post, setPost] = useState({
     title: "",
     category: "",
@@ -16,7 +20,7 @@ export default function CreatePost() {
   // Hook - navigation
   const navigate = useNavigate();
 
-  // Form Handler
+  // Form fields Handler
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -30,14 +34,38 @@ export default function CreatePost() {
     }
   };
 
+  // Form cover file handler
+  const handleFileChange = (e) => {
+    setCoverFile(e.target.files[0])
+  }
+
   // Form submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
+      // TODO: Handle ...
+      const formData = new FormData();
+
+      Object.keys(post).forEach((key) => {
+        if (key === 'readTime') {
+          formData.append('readTime[value]', post.readTime.value);
+          formData.append('readTime[unit]', post.readTime.unit);
+        } else {
+          formData.append(key, post[key]);
+        }
+      })
+
+      if (coverFile) {
+        formData.append('cover', coverFile);
+      }
+
       // POST to /blogPosts
-      await createPost(post);
-      // Go back in Home
+      await createPost(formData);
+
+      // Go back to Home
       navigate("/");
+
     } catch (error) {
       console.error("Error creating the post:", error);
     }
@@ -82,11 +110,10 @@ export default function CreatePost() {
         <div className="form-group">
           <label>Image</label>
           <input
-            type="text"
+            type="file"
             id="cover"
             name="cover"
-            value={post.cover}
-            onChange={handleChange}
+            onChange={handleFileChange}
             required
           />
         </div>
