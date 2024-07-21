@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin } from '../services/api';
 
-const API_URL = import.meta.env.API_URL;
+const API_URL = 'https://mern-blog-b8ed.onrender.com'
 
 // TODO
 
