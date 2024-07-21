@@ -3,7 +3,7 @@ import Author from '../models/Author.js';
 import { generateJWT } from '../utils/jwt.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 
-const router = express();
+const router = express.Router();
 
 // POST /login
 router.post('/login', async (req, res) => {
