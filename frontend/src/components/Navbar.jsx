@@ -50,7 +50,7 @@ export default function Navbar() {
     <nav className="w-full px-4 py-6 border-b-2">
       <div className="w-full lg:w-2/3 flex justify-between items-center m-auto">
         <Link to="/">
-          <img src='../../public/mern-blog-logo.png' alt='logo' className="w-[200px]" />
+          <img src='https://res.cloudinary.com/dicfymkdl/image/upload/v1721633225/mern-blog-logo_xbf5fp.png' alt='logo' className="w-[200px]" />
         </Link>
 
         <ul className="flex gap-4">
