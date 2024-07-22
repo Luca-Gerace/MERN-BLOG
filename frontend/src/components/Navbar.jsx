@@ -47,13 +47,13 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="navbar">
-      <div className="container">
-        <Link to="/" className="navbar-brand">
-          Blog App
+    <nav className="w-full px-4 py-6 border-b-2">
+      <div className="w-full lg:w-2/3 flex justify-between items-center m-auto">
+        <Link to="/">
+          <img src='../../public/mern-blog-logo.png' alt='logo' className="w-[200px]" />
         </Link>
 
-        <ul className="navbar-nav">
+        <ul className="flex gap-4">
           <li className="nav-item">
             <Link to="/" className="nav-link">
               Home
