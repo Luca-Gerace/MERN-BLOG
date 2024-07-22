@@ -27,11 +27,11 @@ const corsOptions = {
   origin: function(origin, callback) {
     const whiteList = [
       'http://localhost:5173', // development
-      'https://mern-blog-eight-pearl.vercel.app/', // vercel
-      'https://mern-blog-b8ed.onrender.com', // render
-    ]
+      'https://mern-blog-eight-pearl.vercel.app', // vercel
+      'https://mern-blog-b8ed.onrender.com' // render
+    ];
 
-    if (process.env.NODE_ENV === 'develpment') {
+    if (process.env.NODE_ENV === 'development') {
       callback(null, true);
     } else if (whiteList.indexOf !== -1 || !origin) {
       callback(null, true);

@@ -25,7 +25,7 @@ export default function Home() {
 
   return (
     <div className="container">
-      <h1>Posts List</h1>
+      <h1 className="text-3xl font-bold underline">Posts List</h1>
       <div className="post-grid">
 
         {posts.map((post) => (
