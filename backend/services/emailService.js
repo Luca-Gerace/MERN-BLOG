@@ -7,7 +7,7 @@ const mg = mailgun({
 
 export const sendEmail = async (to, subject, htmlContent) => {
     const data = {
-        from: 'nome sito <noreply@dominio.com>',
+        from: 'Mern Blog <noreply@mernblog.com>',
         to,
         subject,
         html: htmlContent

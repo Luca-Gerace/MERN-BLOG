@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/api";
 import { Input, Textarea } from "../components/units";
+import Alert from "../components/Alert";
 
 export default function CreatePost() {
 
@@ -20,6 +21,9 @@ export default function CreatePost() {
 
   // Hook - navigation
   const navigate = useNavigate();
+
+  // Hook - alert
+  const [alert, setAlert] = useState(null);
 
   // Form fields Handler
   const handleChange = (e) => {
@@ -65,16 +69,21 @@ export default function CreatePost() {
       await createPost(formData);
 
       // Go back to Home
-      navigate("/");
+      setAlert({ message: 'Post created successfully!', type: 'success' });
+      setTimeout(() => {
+        navigate("/");
+      }, 3000);
 
     } catch (error) {
       console.error("Error creating the post:", error);
+      setAlert({ message: 'Post creation error. Retry.', type: 'error' });
     }
   };
 
   return (
     <>
       <h1 className="text-[36px] font-bold text-center mb-6">Create new post</h1>
+      {alert && <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
       <form onSubmit={handleSubmit} className="create-post-form">
         <Input
           label="Title"

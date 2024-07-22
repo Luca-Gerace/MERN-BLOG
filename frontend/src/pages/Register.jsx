@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/api';
 import { Input } from '../components/units';
+import Alert from '../components/Alert';
 
 export default function Register() {
     // Hook - form data
@@ -16,6 +17,9 @@ export default function Register() {
     // Hook - navigation
     const navigate = useNavigate();
 
+    // Hook - alert
+    const [alert, setAlert] = useState(null);
+
     // input handler
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,20 +33,21 @@ export default function Register() {
             // register user function with form data
             await registerUser(formData);
 
-            alert('Registrazione avvenuta con successo!');
-
-            // Go to login page
-            navigate('/login');
+            setAlert({ message: 'Registration successful!', type: 'success' });
+            setTimeout(() => {
+                navigate('/login');
+            }, 3000);
 
         } catch (error) {
             console.error('Registration error:', error);
-            alert('Registration error. Retry.');
+            setAlert({ message: 'Registration error. Retry.', type: 'error' });
         }
     };
 
     return (
         <>
             <h1 className="text-[36px] font-bold text-center mb-6">Sign up</h1>
+            {alert && <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
             <form onSubmit={handleSubmit}>
                 <Input
                     label='Name'
@@ -63,7 +68,7 @@ export default function Register() {
                     required
                 />
                 <Input
-                    label='birthDate'
+                    label='Birth date'
                     id='birthDate'
                     placeholder='Password'
                     type='date'

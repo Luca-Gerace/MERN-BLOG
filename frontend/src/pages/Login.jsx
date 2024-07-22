@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin } from '../services/api';
 import { Input } from "../components/units";
 import GoogleIcon from '@mui/icons-material/Google';
+import Alert from '../components/Alert';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
@@ -16,6 +17,9 @@ export default function Login() {
     // Hook - navigation
     const navigate = useNavigate();
     const location = useLocation();
+
+    // Hook - alert
+    const [alert, setAlert] = useState(null);
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -52,11 +56,16 @@ export default function Login() {
             window.dispatchEvent(new Event('storage'));
 
             // Go to home
-            navigate('/');
+            setTimeout(() => {
+                navigate('/');
+            }, 3000);
+
+            // Show success alert
+            setAlert({ message: 'Login successful!', type: 'success' });
 
         } catch (error) {
             console.error('Login error:', error);
-            alert('Login error. Retry.');
+            setAlert({ message: 'Login error. Retry.', type: 'error' });
         }
     };
 
@@ -69,6 +78,7 @@ export default function Login() {
     return (
         <>
             <h1 className="text-[36px] font-bold text-center mb-6">Login</h1>
+            {alert && <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
             <form onSubmit={handleSubmit}>
                 <Input
                     label='Email'
