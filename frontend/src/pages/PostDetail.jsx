@@ -14,7 +14,8 @@ export default function PostDetail() {
     const fetchPost = async () => {
       try {
         const postData = await getPost(id);
-        setPost(postData);
+        console.log("Dati del post recuperati:", postData.data); // Assicurati di controllare .data
+        setPost(postData.data);
       } catch (error) {
         console.error("Errore nel recupero del post:", error);
       }
