@@ -45,6 +45,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// Auth middleware for the others routes
+router.use(authMiddleware);
+
 // POST /blogPosts - with cover upload
 router.post('/', cloudinaryUploader.single('cover'), async (req, res) => {
   try {
@@ -278,8 +281,5 @@ router.delete('/:id/comments/:commentId', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-
-// Auth middleware for the others routes
-router.use(authMiddleware);
 
 export default router;

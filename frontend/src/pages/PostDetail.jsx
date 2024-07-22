@@ -10,14 +10,13 @@ export default function PostDetail() {
   const [userData, setUserData] = useState(null);
   const { id } = useParams();
 
-  // Effettua il fetch dei dati del post e dei commenti al caricamento del componente
   useEffect(() => {
     const fetchPost = async () => {
       try {
         const postData = await getPost(id);
-        setPost(postData); 
+        setPost(postData);
       } catch (error) {
-        console.error("Fetching posts error:", error); 
+        console.error("Errore nel recupero del post:", error);
       }
     };
 
@@ -26,7 +25,7 @@ export default function PostDetail() {
         const commentsData = await getComments(id);
         setComments(commentsData);
       } catch (error) {
-        console.error("Fetching comments error:", error);
+        console.error("Errore nel recupero dei commenti:", error);
       }
     };
 
@@ -35,27 +34,26 @@ export default function PostDetail() {
       if (token) {
         setIsLoggedIn(true);
         try {
-          const data = await getUserData(); 
+          const data = await getUserData();
           setUserData(data);
           fetchComments();
         } catch (error) {
-          console.error("Fetching user data error:", error);
-          setIsLoggedIn(false); 
+          console.error("Errore nel recupero dei dati utente:", error);
+          setIsLoggedIn(false);
         }
       } else {
         setIsLoggedIn(false);
       }
     };
 
-    fetchPost(); 
-    checkAuthAndFetchUserData(); 
-  }, [id]); 
+    fetchPost();
+    checkAuthAndFetchUserData();
+  }, [id]);
 
-  // Submit comment handler
   const handleCommentSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     if (!isLoggedIn) {
-      console.error("Log in to write a comment."); 
+      console.error("Effettua il login per scrivere un commento.");
       return;
     }
     try {
@@ -66,11 +64,10 @@ export default function PostDetail() {
       };
       const newCommentData = await addComment(id, commentData);
 
-      // Genera un ID temporaneo se l'API non restituisce un ID in tempo
       if (!newCommentData._id) {
         newCommentData._id = Date.now().toString();
       }
-      setComments((prevComments) => [...prevComments, newCommentData]); 
+      setComments((prevComments) => [...prevComments, newCommentData]);
       setNewComment({ content: "" });
     } catch (error) {
       console.error("Errore nell'invio del commento:", error);
@@ -82,7 +79,7 @@ export default function PostDetail() {
     }
   };
 
-  if (!post) return <div>Caricamento...</div>; 
+  if (!post) return <div>Caricamento...</div>;
 
   return (
     <div className="container">
@@ -93,7 +90,7 @@ export default function PostDetail() {
           <span>Categoria: {post.category}</span>
           <span>Autore: {post.author}</span>
           <span>
-            Tempo di lettura: {post.readTime.value} {post.readTime.unit}
+            Tempo di lettura: {post.readTime?.value} {post.readTime?.unit}
           </span>
         </div>
         <div
@@ -101,7 +98,6 @@ export default function PostDetail() {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
 
-        {/* Sezione commenti */}
         <h3 className="comment-section-title">Commenti</h3>
         {comments.map((comment) => (
           <div key={comment._id} className="comment">
