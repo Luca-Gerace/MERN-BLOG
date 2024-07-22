@@ -2,7 +2,8 @@ import axios from "axios";
 
 
 // API Base URL
-const API_URL = "https://mern-blog-b8ed.onrender.com/api" || "http://localhost:5005/api";
+const API_URL = "https://mern-blog-b8ed.onrender.com/api"
+
 const api = axios.create({
   baseURL: API_URL,
 });
@@ -15,6 +16,7 @@ api.interceptors.request.use(
     if (token) {
       // if token exist, add to authorization headers
       config.headers["Authorization"] = `Bearer ${token}`;
+      console.log("Token inviato:", token); // token Log for debugging
     }
     return config;
   },
@@ -29,16 +31,16 @@ api.interceptors.request.use(
 // Blog posts
 export const getPosts = () => api.get("/blogPosts");
 export const getPost = (id) => api.get(`/blogPosts/${id}`);
-export const createPost = (postData) => api.post("/blogPosts", postData, {headers: {'Content-Type': 'multipart/form-data'}});
+export const createPost = (postData) => api.post("/blogPosts", postData, {headers: {'Content-Type': 'multipart/form-data'},});
 export const updatePost = (id, postData) => api.put(`/blogPosts/${id}`, postData);
 export const deletePost = (id) => api.delete(`/blogPosts/${id}`);
 
 // Comments
-export const getComments = (id) => api.get(`/blogPosts/${id}/comments`).then((response) => response.data);
-export const addComment = (id, commentData) => api.post(`/blogPosts/${id}/comments`, commentData).then((response) => response.data);
-export const getComment = (id, commentId) => api.get(`/blogPosts/${id}/comments/${commentId}`).then((response) => response.data);
-export const updateComment = (id, commentId, commentData) => api.put(`/blogPosts/${id}/comments/${commentId}`, commentData).then((response) => response.data);
-export const deleteComment = (id, commentId) => api.delete(`/blogPosts/${id}/comments/${commentId}`).then((response) => response.data);
+export const getComments = (postId) => api.get(`/blogPosts/${postId}/comments`).then((response) => response.data);
+export const addComment = (postId, commentData) => api.post(`/blogPosts/${postId}/comments`, commentData).then((response) => response.data);
+export const getComment = (postId, commentId) => api.get(`/blogPosts/${postId}/comments/${commentId}`).then((response) => response.data);
+export const updateComment = (postId, commentId, commentData) => api.put(`/blogPosts/${postId}/comments/${commentId}`, commentData).then((response) => response.data);
+export const deleteComment = (postId, commentId) => api.delete(`/blogPosts/${postId}/comments/${commentId}`).then((response) => response.data);
 
 // User
 export const userLogin = async (credentials) => {
