@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { userLogin } from '../services/api';
+import { Input } from "../components/units";
+import GoogleIcon from '@mui/icons-material/Google';
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5005";
 
@@ -65,26 +67,33 @@ export default function Login() {
     };
     
     return (
-        <div className='container'>
-            <h2>Login</h2>
+        <>
+            <h1 className="text-[36px] font-bold text-center mb-6">Login</h1>
             <form onSubmit={handleSubmit}>
-                <input
-                type='email'
-                name='email'
-                placeholder='Email'
-                onChange={handleChange}
-                required
+                <Input
+                    label='Email'
+                    type='email'
+                    name='email'
+                    id='email'
+                    placeholder='Email'
+                    onChange={handleChange}
+                    required
                 />
-                <input
-                type='password'
-                name='password'
-                placeholder='Password'
-                onChange={handleChange}
-                required
+                <Input
+                    label='Password'
+                    type='password'
+                    name='password'
+                    id='password'
+                    placeholder='Password'
+                    onChange={handleChange}
+                    required
                 />
-                <button type='submit'>Accedi</button>
+                <button type="submit" className="w-full mt-4 p-4 text-white bg-[#646ECB] rounded-md">Login</button>
             </form>
-            <button onClick={handleGoogleLogin}>Accedi con Google</button>
-        </div>
+            <div className="flex flex-col mt-8 gap-4">
+                <span className="px-4 m-auto">or</span>
+                <button onClick={handleGoogleLogin} className="w-full mt-4 p-4 border-2 rounded-md flex gap-4 justify-center items-center"><GoogleIcon /> Login with Google</button>
+            </div>
+        </>
     );
 }

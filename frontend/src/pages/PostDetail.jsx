@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getPost, getComments, addComment, getUserData } from "../services/api";
+import { Textarea } from "../components/units";
+import CommentArea from "../components/CommentArea";
 
 export default function PostDetail() {
   const [post, setPost] = useState(null);
@@ -14,10 +16,9 @@ export default function PostDetail() {
     const fetchPost = async () => {
       try {
         const postData = await getPost(id);
-        console.log("Dati del post recuperati:", postData.data); // Assicurati di controllare .data
         setPost(postData.data);
       } catch (error) {
-        console.error("Errore nel recupero del post:", error);
+        console.error("Post data error:", error);
       }
     };
 
@@ -26,7 +27,7 @@ export default function PostDetail() {
         const commentsData = await getComments(id);
         setComments(commentsData);
       } catch (error) {
-        console.error("Errore nel recupero dei commenti:", error);
+        console.error("Comment data error:", error);
       }
     };
 
@@ -39,7 +40,7 @@ export default function PostDetail() {
           setUserData(data);
           fetchComments();
         } catch (error) {
-          console.error("Errore nel recupero dei dati utente:", error);
+          console.error("User data error:", error);
           setIsLoggedIn(false);
         }
       } else {
@@ -54,7 +55,7 @@ export default function PostDetail() {
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!isLoggedIn) {
-      console.error("Effettua il login per scrivere un commento.");
+      console.error("Login to write a comment.");
       return;
     }
     try {
@@ -71,57 +72,55 @@ export default function PostDetail() {
       setComments((prevComments) => [...prevComments, newCommentData]);
       setNewComment({ content: "" });
     } catch (error) {
-      console.error("Errore nell'invio del commento:", error);
+      console.error("Comment error:", error);
       alert(
-        `Errore nell'invio del commento: ${
+        `Comment error: ${
           error.response?.data?.message || error.message
         }`
       );
     }
   };
 
-  if (!post) return <div>Caricamento...</div>;
+  if (!post) return <div>Loading...</div>;
 
   return (
     <div className="container">
-      <article className="post-detail">
-        <img src={post.cover} alt={post.title} className="post-cover" />
-        <h1>{post.title}</h1>
-        <div className="post-meta">
-          <span>Categoria: {post.category}</span>
-          <span>Autore: {post.author}</span>
-          <span>
-            Tempo di lettura: {post.readTime?.value} {post.readTime?.unit}
-          </span>
+      <article className="flex flex-col gap-4 p-6">
+        <img src={post.cover} alt={post.title} className="w-full aspect-[2/1] rounded-md" />
+        <div className="flex flex-col gap-2">
+            <h2 className="text-[24px] font-bold">{post.title}</h2>
+            <p className="text-[16px]">by {post.author}</p>
         </div>
         <div
           className="comment-post-content"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
+        <div className="flex justify-between items-center mb-6">
+            <strong className="px-4 text-[12px] p-2 rounded-full text-white bg-[#646ECB]">{post.category}</strong>
+            <span>Read time: {post.readTime.value} minutes</span>
+        </div>
 
-        <h3 className="comment-section-title">Commenti</h3>
-        {comments.map((comment) => (
-          <div key={comment._id} className="comment">
-            <p>{comment.content}</p>
-            <small>Di: {comment.name}</small>
-          </div>
-        ))}
+        <CommentArea comments={comments} />
 
         {isLoggedIn ? (
           <form onSubmit={handleCommentSubmit}>
-            <textarea
+
+            <Textarea
+              type="text"
+              id="content"
+              name="content"
+              placeholder="Write a comment..."
               value={newComment.content}
               onChange={(e) =>
                 setNewComment({ ...newComment, content: e.target.value })
               }
-              placeholder="Scrivi un commento..."
+              required
             />
-            <button type="submit">Invia commento</button>
+            <button type="submit" className="w-full mt-4 p-4 text-white bg-[#646ECB] rounded-md">Add comment</button>
           </form>
         ) : (
           <p className="no-logged-section">
-            <Link to="/login">Accedi</Link> per visualizzare o lasciare
-            commenti.
+            <Link to="/login" className="text-[#646ECB] underline cursor-pointer">Login</Link> to see and write comments
           </p>
         )}
       </article>

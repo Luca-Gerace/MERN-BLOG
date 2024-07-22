@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { getPosts } from "../services/api";
+import SinglePost from "../components/SinglePost";
 
 export default function Home() {
   
@@ -24,21 +25,13 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="container">
-      <h1 className="text-3xl font-bold underline">Posts List</h1>
-      <div className="post-grid">
-
-        {posts.map((post) => (
-          // Navigate to sinle post page
-          <Link to={`/post/${post._id}`} key={post._id} className="post-card">
-            <img src={post.cover} alt={post.title} className="post-image" />
-            <div className="post-content">
-              <h2>{post.title}</h2>
-              <p>Author: {post.author}</p>
-            </div>
-          </Link>
-        ))}
-      </div>
+    <div className="flex flex-col gap-8">
+      {posts.map((post) => (
+        // Navigate to sinle post page
+        <Link to={`/post/${post._id}`} key={post._id} className="post-card">
+          <SinglePost post={post} />
+        </Link>
+      ))}
     </div>
   );
 }

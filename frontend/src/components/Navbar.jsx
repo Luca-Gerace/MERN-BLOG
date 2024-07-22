@@ -4,72 +4,83 @@ import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if token exist inside localStorage
     const checkLoginStatus = async () => {
-
       const token = localStorage.getItem('token');
 
       if (token) {
         try {
-          await getUserData();
-          setIsLoggedIn(true); 
+          const userData = await getUserData();
+          setUser(userData); // Assumiamo che userData contenga { name, surname }
+          setIsLoggedIn(true);
         } catch (err) {
-          console.error('token not valid', err);
+          console.error('Token not valid', err);
           localStorage.removeItem('token');
-          setIsLoggedIn(false); 
+          setIsLoggedIn(false);
+          setUser(null);
         }
       } else {
         setIsLoggedIn(false);
+        setUser(null);
       }
     };
 
-    // call login status func
     checkLoginStatus();
 
-    // Listener to check login status
-    window.addEventListener("storage", checkLoginStatus);
-    window.addEventListener("loginStateChange", checkLoginStatus);
+    const handleStorageChange = () => {
+      checkLoginStatus();
+    };
 
-    // remove event listeners
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("loginStateChange", handleStorageChange);
+
     return () => {
-      window.removeEventListener("storage", checkLoginStatus);
-      window.removeEventListener("loginStateChange", checkLoginStatus);
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("loginStateChange", handleStorageChange);
     };
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
+    setUser(null);
     navigate("/");
   };
 
+  // avatar fallback img
+  const fallbackAvatar = "https://res.cloudinary.com/dicfymkdl/image/upload/v1721642624/avatar_rsyffw.png";
+
   return (
     <nav className="w-full px-4 py-6 border-b-2">
-      <div className="w-full lg:w-2/3 flex justify-between items-center m-auto">
+      <div className="w-full lg:w-1/2 flex justify-between items-center m-auto">
         <Link to="/">
-          <img src='https://res.cloudinary.com/dicfymkdl/image/upload/v1721633225/mern-blog-logo_xbf5fp.png' alt='logo' className="w-[200px]" />
+          <img 
+            src='https://res.cloudinary.com/dicfymkdl/image/upload/v1721633225/mern-blog-logo_xbf5fp.png' 
+            alt='logo' 
+            className="w-[200px]" 
+          />
         </Link>
-
-        <ul className="flex gap-4">
-          <li className="nav-item">
-            <Link to="/" className="nav-link">
-              Home
-            </Link>
-          </li>
+        <ul className="flex items-center gap-12">
           {isLoggedIn ? (
             <>
-              <li className="nav-item">
-                <Link to="/create" className="nav-link">
-                  Nuovo Post
+              <li>
+                <Link to="/create">
+                  <button type="submit" className="px-4 py-2 text-white bg-[#646ECB] rounded-md">New post</button>
                 </Link>
               </li>
-              <li className="nav-item">
-                <button onClick={handleLogout} className="nav-link">
-                  Logout
-                </button>
+              <li>
+                {user ? (
+                  <div className="flex items-center gap-4">
+                    <img src={user.avatar ? user.avatar : fallbackAvatar} alt='user image' className="w-[50px] h-[50px] rounded-full" />
+                    <div className="flex flex-col text-left">
+                      <span>{user.name} {user.surname}</span>
+                      <a className="text-[12px] underline cursor-pointer" onClick={handleLogout}>Logout</a>
+                    </div>
+                  </div>
+                ) : null}
               </li>
             </>
           ) : (
