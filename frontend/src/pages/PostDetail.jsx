@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getPost, getComments, addComment, getUserData } from "../services/api";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { getPost, getComments, addComment, getUserData, updatePost, deletePost } from "../services/api";
 import { Textarea } from "../components/units";
 import CommentArea from "../components/CommentArea";
 
@@ -11,6 +11,7 @@ export default function PostDetail() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -81,11 +82,38 @@ export default function PostDetail() {
     }
   };
 
+  const handleDelete = async () => {
+    try {
+      await deletePost(id);
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const handleUpdate = async () => {
+    const updatedContent = prompt('Enter new content:');
+    if (updatedContent) {
+      try {
+        const updatedPost = await updatePost(id, { content: updatedContent });
+        setPost(updatedPost);
+      } catch (error) {
+        console.error('Error updating post:', error);
+      }
+    }
+  };
+
   if (!post) return <div>Loading...</div>;
 
   return (
     <div className="container">
       <article className="flex flex-col gap-4 p-6">
+        {userData && userData.email === post.author && (
+          <div className="flex justify-end gap-2">
+            <button onClick={handleUpdate} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
+            <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
+          </div>
+        )}
         <img src={post.cover} alt={post.title} className="w-full aspect-[2/1] rounded-md" />
         <div className="flex flex-col gap-2">
             <h2 className="text-[24px] font-bold">{post.title}</h2>
@@ -104,7 +132,6 @@ export default function PostDetail() {
 
         {isLoggedIn ? (
           <form onSubmit={handleCommentSubmit}>
-
             <Textarea
               type="text"
               id="content"

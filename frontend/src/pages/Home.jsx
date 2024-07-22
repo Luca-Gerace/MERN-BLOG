@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPosts } from '../services/api';
+import { getPosts, updatePost, deletePost } from '../services/api';
 import SkeletonCard from '../components/SkeletonCard';
 import { Link } from 'react-router-dom';
 import SinglePost from '../components/SinglePost';
@@ -11,7 +11,6 @@ export default function HomePage() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // GET to /blogPosts
         const response = await getPosts();
         setPosts(response.data);
       } catch (error) {
@@ -24,16 +23,36 @@ export default function HomePage() {
     fetchPosts();
   }, []);
 
+  const handleDelete = async (postId) => {
+    try {
+      await deletePost(postId);
+      setPosts(posts.filter(post => post._id !== postId));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
+  const handleUpdate = async (postId) => {
+    const updatedContent = prompt('Enter new content:');
+    if (updatedContent) {
+      try {
+        const updatedPost = await updatePost(postId, { content: updatedContent });
+        setPosts(posts.map(post => (post._id === postId ? updatedPost : post)));
+      } catch (error) {
+        console.error('Error updating post:', error);
+      }
+    }
+  };
+
   return (
-      <div className="flex flex-col gap-8">
-        {loading
-          ? Array.from({ length: 6 }).map((_, index) => <SkeletonCard key={index} />)
-          : posts.map((post) => (
-            // Navigate to sinle post page
+    <div className="flex flex-col gap-8">
+      {loading
+        ? Array.from({ length: 4 }).map((_, index) => <SkeletonCard key={index} />)
+        : posts.map((post) => (
             <Link to={`/post/${post._id}`} key={post._id}>
-              <SinglePost post={post} />
+              <SinglePost post={post} onUpdate={handleUpdate} onDelete={handleDelete} />
             </Link>
-            ))}
-      </div>
+          ))}
+    </div>
   );
 }
