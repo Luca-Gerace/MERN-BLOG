@@ -149,10 +149,8 @@ router.patch('/:id/cover', cloudinaryUploader.single('cover'), async (req, res) 
     blogPost.cover = req.file.path;
 
     // Save on MongoDB
-    await blogPost.save();
-
-    // Send request
-    res.json(blogPost);
+    const updatedPost = await blogPost.save();
+    res.json(updatedPost); // Return the updated post data
 
   } catch (err) {
     res.status(400).json({ message: err.message });

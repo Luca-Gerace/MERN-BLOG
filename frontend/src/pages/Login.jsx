@@ -58,7 +58,7 @@ export default function Login() {
             // Go to home
             setTimeout(() => {
                 navigate('/');
-            }, 3000);
+            }, 2000);
 
             // Show success alert
             setAlert({ message: 'Login successful!', type: 'success' });

@@ -4,11 +4,13 @@ import Modal from 'react-modal';
 import { getPost, getComments, addComment, getUserData, updatePost, deletePost, updateCover } from "../services/api";
 import { Input, Textarea } from "../components/units";
 import CommentArea from "../components/CommentArea";
+import Alert from '../components/Alert';
 
 // Configura le classi di default per react-modal
 Modal.setAppElement('#root');
 
 export default function PostDetail() {
+  // Hooks
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState({ content: "" });
@@ -19,6 +21,8 @@ export default function PostDetail() {
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
   const [editPostData, setEditPostData] = useState({ title: "", content: "", category: "", author: "" });
   const [editCoverFile, setEditCoverFile] = useState(null);
+  const [alert, setAlert] = useState(null);
+
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -78,31 +82,36 @@ export default function PostDetail() {
 
       const newCommentData = await addComment(id, commentData);
 
-      // Ricarica i commenti dal server
-      const postData = await getPost(id);
-      setComments(postData.data.comments);
-
-      if (!newCommentData._id) {
-        newCommentData._id = Date.now().toString();
-      }
       setComments((prevComments) => [...prevComments, newCommentData]);
+      // reset
       setNewComment({ content: "" });
+      // Show success alert
+      setAlert({ message: 'Comment added with success!', type: 'success' });
+
     } catch (error) {
       console.error("Comment error:", error);
-      alert(
-        `Comment error: ${
-          error.response?.data?.message || error.message
-        }`
-      );
+      // Show error alert
+      setAlert({ message: 'Comment error!', type: 'error' });
     }
   };
 
   const handleDelete = async () => {
     try {
       await deletePost(id);
-      navigate('/');
+      
+      // Go to home
+        setTimeout(() => {
+          navigate('/');
+      }, 2000);
+
+      // Show success alert
+      setAlert({ message: 'Post deleted with success', type: 'success' });
+
+
     } catch (error) {
       console.error('Error deleting post:', error);
+      // Show error alert
+      setAlert({ message: 'Error deleting post, try again', type: 'error' });      
     }
   };
 
@@ -119,8 +128,15 @@ export default function PostDetail() {
       const updatedPost = await updatePost(id, formData);
       setPost(updatedPost.data);
       setIsEditModalOpen(false);
+
+      // Show success alert
+      setAlert({ message: 'Post updated with success!', type: 'success' });
+      
     } catch (error) {
       console.error('Error updating post:', error);
+
+      // Show error alert
+      setAlert({ message: 'Error updating post, try again', type: 'error' });
     }
   };
 
@@ -131,12 +147,20 @@ export default function PostDetail() {
       if (editCoverFile) {
         formData.append('cover', editCoverFile);
       }
-
+  
       const updatedPost = await updateCover(id, formData);
-      setPost(updatedPost.data);
-      setIsCoverModalOpen(false);
+      setPost(updatedPost.data); // Update post
+      setIsCoverModalOpen(false); // Close modal
+      
+      // Show success alert
+      setAlert({ message: 'Cover image updated with success', type: 'success' });
+
     } catch (error) {
       console.error('Error updating cover:', error);
+
+      // Show error alert
+      setAlert({ message: 'Error updating post cover, try again', type: 'error' });
+
     }
   };
 
@@ -298,6 +322,7 @@ export default function PostDetail() {
           <button onClick={closeDeleteModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
         </div>
       </Modal>
+      {alert && <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
     </div>
   );
 }
