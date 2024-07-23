@@ -38,7 +38,7 @@ export const deletePost = (id) => api.delete(`/blogPosts/${id}`);
 export const getComments = (postId) => api.get(`/blogPosts/${postId}/comments`).then((response) => response.data);
 export const addComment = (postId, commentData) => api.post(`/blogPosts/${postId}/comments`, commentData).then((response) => response.data);
 export const getComment = (postId, commentId) => api.get(`/blogPosts/${postId}/comments/${commentId}`).then((response) => response.data);
-export const updateComment = (postId, commentId, commentData) => api.put(`/blogPosts/${postId}/comments/${commentId}`, commentData).then((response) => response.data);
+export const updateComment = (postId, commentId, commentData) => api.patch(`/blogPosts/${postId}/comments/${commentId}`, commentData).then((response) => response.data);
 export const deleteComment = (postId, commentId) => api.delete(`/blogPosts/${postId}/comments/${commentId}`).then((response) => response.data);
 
 // User
@@ -76,7 +76,7 @@ export const updateCover = async (postId, coverData) => {
       'Content-Type': 'multipart/form-data',
     },
   });
-  return response.data;
+  return response.data; 
 };
 
 export default api;

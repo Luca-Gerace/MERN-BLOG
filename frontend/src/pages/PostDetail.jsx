@@ -166,6 +166,20 @@ export default function PostDetail() {
     }
   };
 
+  const handleUpdateComment = (updatedComment) => {
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment._id === updatedComment._id ? updatedComment : comment
+      )
+    );
+  };
+
+  const handleDeleteComment = (commentId) => {
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment._id !== commentId)
+    );
+  };
+
   // Modals triggers
   const openEditModal = () => {
     setEditPostData({ title: post.title, content: post.content, category: post.category, author: post.author });
@@ -219,7 +233,13 @@ export default function PostDetail() {
         </div>
 
         {/* Comment area */}
-        <CommentArea comments={comments} userData={userData} postId={id} />
+        <CommentArea 
+          comments={comments} 
+          userData={userData} 
+          postId={id} 
+          onUpdateComment={handleUpdateComment} 
+          onDeleteComment={handleDeleteComment} 
+        />
 
         {/* Comment form */}
         {isLoggedIn ? (
