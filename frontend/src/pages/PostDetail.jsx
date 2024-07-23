@@ -164,6 +164,12 @@ export default function PostDetail() {
       // Show success alert
       setAlert({ message: 'Cover image updated with success', type: 'success' });
 
+      // Refresh the page
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+
+
     } catch (error) {
       console.error('Error updating cover:', error);
 
