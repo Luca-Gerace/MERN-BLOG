@@ -17,7 +17,7 @@ export default function PostDetail() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
-  const [editPostData, setEditPostData] = useState({ title: "", content: "" });
+  const [editPostData, setEditPostData] = useState({ title: "", content: "", category: "", author: "" });
   const [editCoverFile, setEditCoverFile] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function PostDetail() {
 
     fetchPost();
     checkAuthAndFetchUserData();
-  }, [id, comments]);
+  }, [id]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -109,9 +109,12 @@ export default function PostDetail() {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append('title', editPostData.title);
-      formData.append('content', editPostData.content);
+      const formData = {
+        title: editPostData.title,
+        content: editPostData.content,
+        category: editPostData.category,
+        author: userData.email, // Aggiungi l'email dell'utente loggato come autore
+      };
 
       const updatedPost = await updatePost(id, formData);
       setPost(updatedPost.data);
@@ -138,7 +141,7 @@ export default function PostDetail() {
   };
 
   const openEditModal = () => {
-    setEditPostData({ title: post.title, content: post.content });
+    setEditPostData({ title: post.title, content: post.content, category: post.category, author: post.author });
     setIsEditModalOpen(true);
   };
 
@@ -238,6 +241,16 @@ export default function PostDetail() {
             value={editPostData.content}
             onChange={(e) => setEditPostData({ ...editPostData, content: e.target.value })}
             required
+          />
+          <Input
+            label="Category"
+            type="text"
+            id='updatedCategory'
+            name='updatedCategory'
+            value={editPostData.category}
+            onChange={(e) => setEditPostData({ ...editPostData, category: e.target.value })}
+            required
+            className="border-2 p-2 rounded-md"
           />
           <div className="flex justify-end gap-2">
             <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
