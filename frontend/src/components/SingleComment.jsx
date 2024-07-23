@@ -8,10 +8,12 @@ import Alert from "./Alert";
 import { Textarea } from "./units";
 
 export default function SingleComment({ comment, userData, postId, onUpdateComment, onDeleteComment }) {
+  // Hooks
   const [isEditing, setIsEditing] = useState(false);
   const [updatedContent, setUpdatedContent] = useState(comment.content);
   const [alert, setAlert] = useState(null);
 
+  // Handle comment deletion
   const handleDelete = async () => {
     try {
       await deleteComment(postId, comment._id);
@@ -23,6 +25,7 @@ export default function SingleComment({ comment, userData, postId, onUpdateComme
     }
   };
 
+  // Handle comment update
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {

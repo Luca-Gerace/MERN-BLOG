@@ -24,11 +24,12 @@ export default function PostDetail() {
   const [editPostData, setEditPostData] = useState({ title: "", content: "", category: "", author: "" });
   const [editCoverFile, setEditCoverFile] = useState(null);
   const [alert, setAlert] = useState(null);
-
+  // Navigation hook
   const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Fetch post data
     const fetchPost = async () => {
       try {
         const postData = await getPost(id);
@@ -39,6 +40,7 @@ export default function PostDetail() {
       }
     };
 
+    // Fetch comments data
     const fetchComments = async () => {
       try {
         const commentsData = await getComments(id);
@@ -48,6 +50,7 @@ export default function PostDetail() {
       }
     };
 
+    // Check if user is logged in and fetch user data
     const checkAuthAndFetchUserData = async () => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -69,6 +72,7 @@ export default function PostDetail() {
     checkAuthAndFetchUserData();
   }, [id]);
 
+  // Handle comment submission
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!isLoggedIn) {
@@ -97,6 +101,7 @@ export default function PostDetail() {
     }
   };
 
+  // Handle post deletion
   const handleDelete = async () => {
     try {
       await deletePost(id);
@@ -117,6 +122,7 @@ export default function PostDetail() {
     }
   };
 
+  // Handle post update
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -124,7 +130,7 @@ export default function PostDetail() {
         title: editPostData.title,
         content: editPostData.content,
         category: editPostData.category,
-        author: userData.email, // Aggiungi l'email dell'utente loggato come autore
+        author: userData.email, // add logged user email as author email
       };
 
       const updatedPost = await updatePost(id, formData);
@@ -142,6 +148,7 @@ export default function PostDetail() {
     }
   };
 
+  // Handle cover update
   const handleCoverUpdate = async (e) => {
     e.preventDefault();
     try {
@@ -165,7 +172,8 @@ export default function PostDetail() {
 
     }
   };
-
+  
+  // Handle comment update
   const handleUpdateComment = (updatedComment) => {
     setComments((prevComments) =>
       prevComments.map((comment) =>
@@ -174,6 +182,7 @@ export default function PostDetail() {
     );
   };
 
+  // Handle comment deletion
   const handleDeleteComment = (commentId) => {
     setComments((prevComments) =>
       prevComments.filter((comment) => comment._id !== commentId)
@@ -206,6 +215,7 @@ export default function PostDetail() {
     setIsCoverModalOpen(false);
   };
 
+  // Use Skeleton if post is not loaded
   if (!post) return <SkeletonArticle />;
 
   return (

@@ -14,7 +14,7 @@ export default function Navbar() {
       if (token) {
         try {
           const userData = await getUserData();
-          setUser(userData); // Assumiamo che userData contenga { name, surname }
+          setUser(userData); // if token is valid, set user data
           setIsLoggedIn(true);
         } catch (err) {
           console.error('Token not valid', err);
