@@ -200,27 +200,34 @@ router.get('/:id/comments/:commentId', async (req, res) => {
 // POST /blogPosts/:id/comments
 router.post('/:id/comments', async (req, res) => {
   try {
+    console.log("Request body:", req.body); // Log dei dati ricevuti
+
     const post = await BlogPost.findById(req.params.id);
 
     if (!post) {
-      return res.status(404).json({ message: 'Blog post not found' })
+      return res.status(404).json({ message: 'Blog post not found' });
     }
 
     const newComment = {
       name: req.body.name,
       email: req.body.email,
       content: req.body.content,
-    }
+    };
 
-    // Add comments
+    console.log("New comment:", newComment); // Log del nuovo commento
+
+    // Aggiungi il commento al post
     post.comments.push(newComment);
 
-    // Save comment on MongoDB
+    // Salva il post con il nuovo commento
     await post.save();
 
-    res.status(201).json(comment);
+    // Trova il commento appena aggiunto
+    const addedComment = post.comments[post.comments.length - 1];
 
+    res.status(201).json(addedComment);
   } catch (err) {
+    console.error('Error adding comment:', err);
     res.status(400).json({ message: err.message });
   }
 });

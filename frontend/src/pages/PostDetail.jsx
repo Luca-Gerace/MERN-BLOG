@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import Modal from 'react-modal';
 import { getPost, getComments, addComment, getUserData, updatePost, deletePost } from "../services/api";
-import { Textarea } from "../components/units";
+import { Input, Textarea } from "../components/units";
 import CommentArea from "../components/CommentArea";
+
+// Configura le classi di default per react-modal
+Modal.setAppElement('#root');
 
 export default function PostDetail() {
   const [post, setPost] = useState(null);
@@ -10,6 +14,10 @@ export default function PostDetail() {
   const [newComment, setNewComment] = useState({ content: "" });
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userData, setUserData] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [editPostData, setEditPostData] = useState({ title: "", content: "" });
+  const [editCoverFile, setEditCoverFile] = useState(null);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -18,6 +26,7 @@ export default function PostDetail() {
       try {
         const postData = await getPost(id);
         setPost(postData.data);
+        setComments(postData.data.comments);
       } catch (error) {
         console.error("Post data error:", error);
       }
@@ -51,7 +60,7 @@ export default function PostDetail() {
 
     fetchPost();
     checkAuthAndFetchUserData();
-  }, [id]);
+  }, [id, comments]);
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -65,7 +74,12 @@ export default function PostDetail() {
         name: `${userData.name} ${userData.surname}`,
         email: userData.email,
       };
+
       const newCommentData = await addComment(id, commentData);
+
+      // Ricarica i commenti dal server
+      const postData = await getPost(id);
+      setComments(postData.data.comments);
 
       if (!newCommentData._id) {
         newCommentData._id = Date.now().toString();
@@ -91,16 +105,39 @@ export default function PostDetail() {
     }
   };
 
-  const handleUpdate = async () => {
-    const updatedContent = prompt('Enter new content:');
-    if (updatedContent) {
-      try {
-        const updatedPost = await updatePost(id, { content: updatedContent });
-        setPost(updatedPost);
-      } catch (error) {
-        console.error('Error updating post:', error);
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
+      formData.append('title', editPostData.title);
+      formData.append('content', editPostData.content);
+      if (editCoverFile) {
+        formData.append('cover', editCoverFile);
       }
+
+      const updatedPost = await updatePost(id, formData);
+      setPost(updatedPost);
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error('Error updating post:', error);
     }
+  };
+
+  const openEditModal = () => {
+    setEditPostData({ title: post.title, content: post.content });
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const openDeleteModal = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false);
   };
 
   if (!post) return <div>Loading...</div>;
@@ -110,8 +147,8 @@ export default function PostDetail() {
       <article className="flex flex-col gap-4 p-6">
         {userData && userData.email === post.author && (
           <div className="flex justify-end gap-2">
-            <button onClick={handleUpdate} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
-            <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
+            <button onClick={openEditModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
+            <button onClick={openDeleteModal} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
           </div>
         )}
         <img src={post.cover} alt={post.title} className="w-full aspect-[2/1] rounded-md" />
@@ -127,7 +164,6 @@ export default function PostDetail() {
             <strong className="px-4 text-[12px] p-2 rounded-full text-white bg-[#646ECB]">{post.category}</strong>
             <span>Read time: {post.readTime.value} minutes</span>
         </div>
-
         <CommentArea comments={comments} />
 
         {isLoggedIn ? (
@@ -151,6 +187,64 @@ export default function PostDetail() {
           </p>
         )}
       </article>
+
+      {/* Edit Modal */}
+      <Modal
+        isOpen={isEditModalOpen}
+        onRequestClose={closeEditModal}
+        contentLabel="Edit Post"
+        className="w-full lg:w-1/2 max-w-[600px] mx-auto bg-white p-6 rounded-md shadow-md"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      >
+        <h2 className="text-2xl font-bold mb-4">Edit Post</h2>
+        <form onSubmit={handleUpdate} className="flex flex-col gap-4">
+          <Input
+            label="Title"
+            type="text"
+            id='updatedTitle'
+            name='updatedTitle'
+            value={editPostData.title}
+            onChange={(e) => setEditPostData({ ...editPostData, title: e.target.value })}
+            required
+            className="border-2 p-2 rounded-md"
+          />
+          <Textarea
+            label="Content"
+            id='updatedContent'
+            name='updatedContent'
+            value={editPostData.content}
+            onChange={(e) => setEditPostData({ ...editPostData, content: e.target.value })}
+            required
+          />
+          <Input
+            label="Cover Image"
+            type="file"
+            id='cover'
+            name='cover'
+            onChange={(e) => setEditCoverFile(e.target.files[0])}
+            className="border-2 p-2 rounded-md"
+          />
+          <div className="flex justify-end gap-2">
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
+            <button type="button" onClick={closeEditModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Delete Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onRequestClose={closeDeleteModal}
+        contentLabel="Delete Post"
+        className="w-full lg:w-1/2 max-w-[600px] mx-auto bg-white p-6 rounded-md shadow-md"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      >
+        <h2 className="text-2xl font-bold mb-12">Are you sure you want to delete this post?</h2>
+        <div className="flex justify-end gap-2">
+          <button onClick={handleDelete} className="bg-red-500 text-white px-4 py-2 rounded-md">Confirm</button>
+          <button onClick={closeDeleteModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
+        </div>
+      </Modal>
     </div>
   );
 }

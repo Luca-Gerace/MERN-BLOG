@@ -1,4 +1,5 @@
 # 🌐 MERN-APP: Fullstack Mern Web App
+Production url: https://mern-blog-eight-pearl.vercel.app/
 
 Stack: MongoDB - Express.js - React (Vite) - Node.js
 
@@ -23,7 +24,8 @@ cd frontend && npm install
 cd ../backend && npm install
 ```
 
-3. Configura il file `.env` nel frontend e nel backend
+3. Configura il file `.env` nel frontend e nel backend, le chiavi da utilizzare sono già presenti nel file .env.dist
+
 
 4. Avvia il backend:
 - Avvia il backend: cd backend && npm start

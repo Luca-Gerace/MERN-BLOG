@@ -15,7 +15,7 @@ export default function Alert({ message, type, onClose }) {
   }, [onClose]);
 
   return (
-    <div className={`border-l-4 p-4 ${alertStyles[type]}`} role="alert">
+    <div className={`fixed bottom-12 right-12 min-w-60 rounded-md shadow-md border-l-4 p-4 ${alertStyles[type]}`} role="alert">
       <p className="font-bold">{type === 'success' ? 'Success' : 'Error'}</p>
       <p>{message}</p>
     </div>

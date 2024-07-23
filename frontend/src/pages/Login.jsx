@@ -52,7 +52,7 @@ export default function Login() {
             // store auth token inside localstorage
             localStorage.setItem('token', response.token);
 
-            // Trigger l'evento storage per aggiornare la Navbar
+            // Trigger storage event to update Navbar
             window.dispatchEvent(new Event('storage'));
 
             // Go to home
@@ -65,7 +65,7 @@ export default function Login() {
 
         } catch (error) {
             console.error('Login error:', error);
-            setAlert({ message: 'Login error. Retry.', type: 'error' });
+            setAlert({ message: 'Login error. Please retry.', type: 'error' });
         }
     };
 
