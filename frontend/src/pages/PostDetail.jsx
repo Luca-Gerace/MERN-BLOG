@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Modal from 'react-modal';
-import { getPost, getComments, addComment, getUserData, updatePost, deletePost } from "../services/api";
+import { getPost, getComments, addComment, getUserData, updatePost, deletePost, updateCover } from "../services/api";
 import { Input, Textarea } from "../components/units";
 import CommentArea from "../components/CommentArea";
 
@@ -16,6 +16,7 @@ export default function PostDetail() {
   const [userData, setUserData] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isCoverModalOpen, setIsCoverModalOpen] = useState(false);
   const [editPostData, setEditPostData] = useState({ title: "", content: "" });
   const [editCoverFile, setEditCoverFile] = useState(null);
   const { id } = useParams();
@@ -111,15 +112,28 @@ export default function PostDetail() {
       const formData = new FormData();
       formData.append('title', editPostData.title);
       formData.append('content', editPostData.content);
+
+      const updatedPost = await updatePost(id, formData);
+      setPost(updatedPost.data);
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error('Error updating post:', error);
+    }
+  };
+
+  const handleCoverUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const formData = new FormData();
       if (editCoverFile) {
         formData.append('cover', editCoverFile);
       }
 
-      const updatedPost = await updatePost(id, formData);
-      setPost(updatedPost);
-      setIsEditModalOpen(false);
+      const updatedPost = await updateCover(id, formData);
+      setPost(updatedPost.data);
+      setIsCoverModalOpen(false);
     } catch (error) {
-      console.error('Error updating post:', error);
+      console.error('Error updating cover:', error);
     }
   };
 
@@ -140,6 +154,14 @@ export default function PostDetail() {
     setIsDeleteModalOpen(false);
   };
 
+  const openCoverModal = () => {
+    setIsCoverModalOpen(true);
+  };
+
+  const closeCoverModal = () => {
+    setIsCoverModalOpen(false);
+  };
+
   if (!post) return <div>Loading...</div>;
 
   return (
@@ -149,6 +171,7 @@ export default function PostDetail() {
           <div className="flex justify-end gap-2">
             <button onClick={openEditModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
             <button onClick={openDeleteModal} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
+            <button onClick={openCoverModal} className="bg-green-500 text-white px-4 py-2 rounded-md">Update Cover</button>
           </div>
         )}
         <img src={post.cover} alt={post.title} className="w-full aspect-[2/1] rounded-md" />
@@ -216,6 +239,23 @@ export default function PostDetail() {
             onChange={(e) => setEditPostData({ ...editPostData, content: e.target.value })}
             required
           />
+          <div className="flex justify-end gap-2">
+            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
+            <button type="button" onClick={closeEditModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Cover Modal */}
+      <Modal
+        isOpen={isCoverModalOpen}
+        onRequestClose={closeCoverModal}
+        contentLabel="Update Cover"
+        className="w-full lg:w-1/2 max-w-[600px] mx-auto bg-white p-6 rounded-md shadow-md"
+        overlayClassName="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center"
+      >
+        <h2 className="text-2xl font-bold mb-4">Update Cover Image</h2>
+        <form onSubmit={handleCoverUpdate} className="flex flex-col gap-4">
           <Input
             label="Cover Image"
             type="file"
@@ -225,8 +265,8 @@ export default function PostDetail() {
             className="border-2 p-2 rounded-md"
           />
           <div className="flex justify-end gap-2">
-            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">Save Changes</button>
-            <button type="button" onClick={closeEditModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
+            <button type="submit" className="bg-green-500 text-white px-4 py-2 rounded-md">Update Cover</button>
+            <button type="button" onClick={closeCoverModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
           </div>
         </form>
       </Modal>
