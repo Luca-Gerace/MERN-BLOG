@@ -69,4 +69,14 @@ export const getUserData = async () => {
   }
 };
 
+// Added updateCover function
+export const updateCover = async (postId, coverData) => {
+  const response = await api.patch(`/blogPosts/${postId}/cover`, coverData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
 export default api;
