@@ -4,9 +4,11 @@ import Modal from 'react-modal';
 import { getPost, getComments, addComment, getUserData, updatePost, deletePost, updateCover } from "../services/api";
 import { Input, Textarea } from "../components/units";
 import CommentArea from "../components/CommentArea";
+import EditIcon from '@mui/icons-material/Edit';
 import Alert from '../components/Alert';
+import SkeletonArticle from '../components/SkeletonArticle';
 
-// Configura le classi di default per react-modal
+// React-modal default class configuration
 Modal.setAppElement('#root');
 
 export default function PostDetail() {
@@ -164,6 +166,7 @@ export default function PostDetail() {
     }
   };
 
+  // Modals triggers
   const openEditModal = () => {
     setEditPostData({ title: post.title, content: post.content, category: post.category, author: post.author });
     setIsEditModalOpen(true);
@@ -189,16 +192,16 @@ export default function PostDetail() {
     setIsCoverModalOpen(false);
   };
 
-  if (!post) return <div>Loading...</div>;
+  if (!post) return <SkeletonArticle />;
 
   return (
     <div className="container">
       <article className="flex flex-col gap-4 p-6">
         {userData && userData.email === post.author && (
           <div className="flex justify-end gap-2">
+            <button onClick={openCoverModal} className="relative top-[170px] left-[130px] md:top-[300px] md:left-[100px] shadow-xl bg-white p-4 rounded-full text-[#242424] hover:shadow-2xl hover:scale-125"><EditIcon /></button>
             <button onClick={openEditModal} className="bg-blue-500 text-white px-4 py-2 rounded-md">Edit</button>
             <button onClick={openDeleteModal} className="bg-red-500 text-white px-4 py-2 rounded-md">Delete</button>
-            <button onClick={openCoverModal} className="bg-green-500 text-white px-4 py-2 rounded-md">Update Cover</button>
           </div>
         )}
         <img src={post.cover} alt={post.title} className="w-full aspect-[2/1] rounded-md" />
@@ -214,8 +217,11 @@ export default function PostDetail() {
             <strong className="px-4 text-[12px] p-2 rounded-full text-white bg-[#646ECB]">{post.category}</strong>
             <span>Read time: {post.readTime.value} minutes</span>
         </div>
-        <CommentArea comments={comments} />
 
+        {/* Comment area */}
+        <CommentArea comments={comments} userData={userData} postId={id} />
+
+        {/* Comment form */}
         {isLoggedIn ? (
           <form onSubmit={handleCommentSubmit}>
             <Textarea
@@ -322,6 +328,7 @@ export default function PostDetail() {
           <button onClick={closeDeleteModal} className="bg-gray-500 text-white px-4 py-2 rounded-md">Cancel</button>
         </div>
       </Modal>
+      {/* Alert */}
       {alert && <Alert message={alert.message} type={alert.type} onClose={() => setAlert(null)} />}
     </div>
   );
